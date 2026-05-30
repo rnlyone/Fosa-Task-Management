@@ -320,7 +320,7 @@
             }
             document.getElementById('editTaskPriority').value      = task.priority;
             document.getElementById('editTaskColumn').value        = task.column;
-            document.getElementById('editTaskDeadline').value      = task.deadline_date ?? '';
+            document.getElementById('editTaskDeadline').value      = task.deadline_date ? task.deadline_date.substring(0, 10) : '';
             editQuill.root.innerHTML                               = task.description ?? '';
             document.getElementById('editDescriptionInput').value  = task.description ?? '';
             const assigneeIds = task.assignees.map(a => a.id.toString());
@@ -431,7 +431,7 @@
         }
         document.getElementById('editTaskPriority').value      = task.priority;
         document.getElementById('editTaskColumn').value        = task.column;
-        document.getElementById('editTaskDeadline').value      = task.deadline_date ?? '';
+        document.getElementById('editTaskDeadline').value      = task.deadline_date ? task.deadline_date.substring(0, 10) : '';
         editQuill.root.innerHTML                               = task.description ?? '';
         document.getElementById('editDescriptionInput').value  = task.description ?? '';
 
