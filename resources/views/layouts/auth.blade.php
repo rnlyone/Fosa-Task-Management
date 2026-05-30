@@ -10,6 +10,14 @@
 
     <link rel="icon" type="image/x-icon" href="{{ asset('vuexy/img/favicon/favicon.ico') }}" />
 
+    <!-- PWA -->
+    <link rel="manifest" href="{{ asset('manifest.json') }}" />
+    <meta name="theme-color" content="#2563eb" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="FOSA" />
+    <link rel="apple-touch-icon" href="{{ asset('icons/icon-192x192.png') }}" />
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -49,5 +57,14 @@
     <script src="{{ asset('vuexy/vendor/libs/@form-validation/auto-focus.js') }}"></script>
     <script src="{{ asset('vuexy/js/main.js') }}"></script>
     <script src="{{ asset('vuexy/js/pages-auth.js') }}"></script>
+
+    <!-- PWA Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(() => {});
+            });
+        }
+    </script>
 </body>
 </html>
