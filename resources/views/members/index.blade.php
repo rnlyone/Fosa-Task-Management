@@ -113,14 +113,14 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="text-center py-6 text-muted">No members found.</td>
+                    <td colspan="{{ auth()->user()->isLeadership() ? 6 : 5 }}" class="text-center py-6 text-muted">No members found.</td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
     <div class="card-footer">
-        {{ $members->withQueryString()->links() }}
+        {{ $members->links() }}
     </div>
 </div>
 @endsection
