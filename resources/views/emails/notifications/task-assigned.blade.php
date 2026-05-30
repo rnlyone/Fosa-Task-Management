@@ -11,7 +11,8 @@
     <p><strong>Deadline:</strong> {{ \Carbon\Carbon::parse($task->deadline_date)->format('d M Y') }}</p>
     @endif
     @if($task->description)
-    <p><strong>Description:</strong> {{ $task->description }}</p>
+    <p><strong>Description:</strong></p>
+    <div>{!! $task->description !!}</div>
     @endif
   </div>
   <a href="{{ $url }}" class="btn">View Board</a>

@@ -37,7 +37,7 @@ class TaskAssigned extends Notification
     {
         $url = route('dashboard.switch', $this->task->event_id);
         return [
-            'subject' => '[FOSA] Task Assigned: ' . $this->task->title,
+            'subject' => '[' . $this->task->event->name . '] Task Assigned: ' . $this->task->title,
             'html'    => view('emails.notifications.task-assigned', [
                 'task'     => $this->task,
                 'user'     => $notifiable,
