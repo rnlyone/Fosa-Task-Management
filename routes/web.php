@@ -70,6 +70,7 @@ Route::middleware('auth')->group(function () {
     // Update own status
     Route::patch('/profile/status', [\App\Http\Controllers\ProfileController::class, 'updateStatus'])->name('profile.status');
     Route::delete('/profile/cancel-email-change', [\App\Http\Controllers\ProfileController::class, 'cancelEmailChange'])->name('profile.cancel-email-change');
+    Route::put('/profile/mail-preferences', [\App\Http\Controllers\ProfileController::class, 'updateMailPreferences'])->name('profile.mail-preferences');
 
     // Notifications
     Route::post('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markRead'])->name('notifications.read');

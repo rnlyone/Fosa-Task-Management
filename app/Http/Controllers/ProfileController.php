@@ -140,4 +140,25 @@ class ProfileController extends Controller
 
         return back()->with('success', 'Status updated.');
     }
+
+    public function updateMailPreferences(Request $request)
+    {
+        $types = [
+            'event_created',
+            'task_assigned',
+            'task_unassigned',
+            'task_moved',
+            'task_done',
+            'task_deadline_set',
+        ];
+
+        $preferences = [];
+        foreach ($types as $type) {
+            $preferences[$type] = $request->boolean($type);
+        }
+
+        auth()->user()->update(['mail_preferences' => $preferences]);
+
+        return back()->with('success', 'Email notification preferences saved.');
+    }
 }

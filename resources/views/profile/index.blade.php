@@ -223,6 +223,55 @@
             </div>
         </div>
 
+        {{-- Email Notification Settings --}}
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="ti ti-bell-ringing me-2 text-primary"></i>Email Notification Settings</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-3">Choose which activities send an email to your inbox. In-app notifications are always delivered regardless of these settings.</p>
+                <form method="POST" action="{{ route('profile.mail-preferences') }}">
+                    @csrf
+                    @method('PUT')
+                    @php
+                        $prefs = $user->mail_preferences ?? [];
+                        $mailTypes = [
+                            'event_created'    => ['label' => 'New Event Added',                  'icon' => 'ti-calendar-plus',  'desc' => 'When you are added as a member of a new event.'],
+                            'task_assigned'    => ['label' => 'Task Assigned to Me',              'icon' => 'ti-clipboard-check', 'desc' => 'When a task is assigned to you.'],
+                            'task_unassigned'  => ['label' => 'Removed from Task',               'icon' => 'ti-clipboard-x',    'desc' => 'When you are removed from a task.'],
+                            'task_moved'       => ['label' => 'Task Column Moved',               'icon' => 'ti-arrows-right-left', 'desc' => 'When a task you are in is moved to another column.'],
+                            'task_done'        => ['label' => 'Task Marked as Done',             'icon' => 'ti-circle-check',   'desc' => 'When a task is moved to the Done column (leadership alert).'],
+                            'task_deadline_set'=> ['label' => 'Deadline Set on Task',            'icon' => 'ti-calendar-event', 'desc' => 'When a deadline is set or updated on your task.'],
+                        ];
+                    @endphp
+                    <div class="row g-3">
+                        @foreach($mailTypes as $type => $meta)
+                        <div class="col-12 col-md-6">
+                            <div class="d-flex align-items-start gap-3 p-3 rounded border bg-light">
+                                <i class="ti {{ $meta['icon'] }} fs-4 text-primary mt-1"></i>
+                                <div class="flex-grow-1">
+                                    <div class="fw-semibold">{{ $meta['label'] }}</div>
+                                    <div class="text-muted small">{{ $meta['desc'] }}</div>
+                                </div>
+                                <div class="form-check form-switch ms-2 mt-1">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                           name="{{ $type }}" value="1"
+                                           id="mail_{{ $type }}"
+                                           {{ ($prefs[$type] ?? true) ? 'checked' : '' }}>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                        <div class="col-12 d-flex justify-content-end mt-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="ti ti-device-floppy me-1"></i> Save Preferences
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
     </div>
 </div>
 

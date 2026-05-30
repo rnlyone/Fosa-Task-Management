@@ -15,7 +15,11 @@ class TaskAssigned extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database', SmartMailChannel::class];
+        $channels = ['database'];
+        if ($notifiable->wantsMailFor('task_assigned')) {
+            $channels[] = SmartMailChannel::class;
+        }
+        return $channels;
     }
 
     public function toArray(object $notifiable): array

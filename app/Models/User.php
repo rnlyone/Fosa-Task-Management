@@ -24,6 +24,7 @@ class User extends Authenticatable
         'avatar',
         'pending_email',
         'email_change_token',
+        'mail_preferences',
     ];
 
     protected $hidden = ['password', 'remember_token', 'email_change_token'];
@@ -32,7 +33,8 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
+            'mail_preferences'  => 'array',
         ];
     }
 
@@ -107,6 +109,15 @@ class User extends Authenticatable
         }
 
         return $query->count();
+    }
+
+    /**
+     * Check whether the user wants an email for a given notification type.
+     * Defaults to true (enabled) if no preference has been saved.
+     */
+    public function wantsMailFor(string $type): bool
+    {
+        return $this->mail_preferences[$type] ?? true;
     }
 
     public function getAvatarUrlAttribute(): string
