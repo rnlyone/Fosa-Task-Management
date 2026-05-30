@@ -13,49 +13,83 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // ── Departments ──────────────────────────────────────────
+        $deptEM  = Department::create(['name' => 'Event Management']);
+        $deptER  = Department::create(['name' => 'External Relations']);
+        $deptMC  = Department::create(['name' => 'Media and Creative']);
+        $deptRE  = Department::create(['name' => 'Research and Evaluation']);
+        $deptLog = Department::create(['name' => 'Logistic']);
+
         // ── Users ────────────────────────────────────────────────
         $president = User::create([
-            'name'     => 'Ahmad Fauzan',
-            'username' => 'president',
-            'email'    => 'president@fosa.id',
+            'name'     => 'Ima',
+            'username' => 'ima',
+            'email'    => 'imadias1996@gmail.com',
             'password' => Hash::make('password'),
             'role'     => 'president',
             'status'   => 'available',
         ]);
 
         $vp = User::create([
-            'name'     => 'Siti Rahayu',
-            'username' => 'vicepresident',
-            'email'    => 'vp@fosa.id',
+            'name'     => 'Lin',
+            'username' => 'lin',
+            'email'    => 'waiyanlynn3142@gmail.com',
             'password' => Hash::make('password'),
             'role'     => 'vice_president',
             'status'   => 'available',
         ]);
 
         $memberData = [
-            ['name' => 'Budi Santoso',   'username' => 'budi',   'email' => 'budi@fosa.id',   'status' => 'free'],
-            ['name' => 'Citra Dewi',     'username' => 'citra',  'email' => 'citra@fosa.id',  'status' => 'available'],
-            ['name' => 'Dian Pratama',   'username' => 'dian',   'email' => 'dian@fosa.id',   'status' => 'busy'],
-            ['name' => 'Eko Wahyudi',    'username' => 'eko',    'email' => 'eko@fosa.id',    'status' => 'free'],
-            ['name' => 'Fitri Handayani','username' => 'fitri',  'email' => 'fitri@fosa.id',  'status' => 'available'],
-            ['name' => 'Gilang Ramadan', 'username' => 'gilang', 'email' => 'gilang@fosa.id', 'status' => 'busy'],
-            ['name' => 'Hana Pertiwi',   'username' => 'hana',   'email' => 'hana@fosa.id',   'status' => 'very_busy'],
-            ['name' => 'Irfan Malik',    'username' => 'irfan',  'email' => 'irfan@fosa.id',  'status' => 'available'],
+            // Event Management
+            ['name' => 'Susan',   'username' => 'susan',   'email' => 'susan.fitriyana@gmail.com',      'dept' => $deptEM],
+            ['name' => 'Ayaka',   'username' => 'ayaka',   'email' => 'daidaigomama@gmail.com',         'dept' => $deptEM],
+            ['name' => 'Riady',   'username' => 'riady',   'email' => 'arr0103@icloud.com',              'dept' => $deptEM],
+            ['name' => 'Octavio', 'username' => 'octavio', 'email' => 'octmolina@hotmail.com',           'dept' => $deptEM],
+            // External Relations
+            ['name' => 'Yuki',    'username' => 'yuki',    'email' => 'mii_ke2017@yahoo.co.jp',          'dept' => $deptER],
+            ['name' => 'Rydll',   'username' => 'rydll',   'email' => 'rydll.pegarido@gmail.com',        'dept' => $deptER],
+            ['name' => 'Kyoka',   'username' => 'kyoka',   'email' => 'jumpjump524@gmail.com',           'dept' => $deptER],
+            ['name' => 'Qoni',    'username' => 'qoni',    'email' => 'qonii1120@gmail.com',             'dept' => $deptER],
+            ['name' => 'Abdel',   'username' => 'abdel',   'email' => 'loverabdel55@gmail.com',          'dept' => $deptER],
+            // Media and Creative
+            ['name' => 'Ryeona',  'username' => 'ryeona',  'email' => 'cathrillorta5@gmail.com',         'dept' => $deptMC],
+            ['name' => 'Auron',   'username' => 'auron',   'email' => 'kopaukedu2022@gmail.com',         'dept' => $deptMC],
+            ['name' => 'Akis',    'username' => 'akis',    'email' => 'balqismt00@gmail.com',            'dept' => $deptMC],
+            ['name' => 'Momoka',  'username' => 'momoka',  'email' => 'momonga.cho0131@gmail.com',       'dept' => $deptMC],
+            ['name' => 'Torikai', 'username' => 'torikai', 'email' => 'torikai.tatsuyuki2005@gmail.com', 'dept' => $deptMC],
+            ['name' => 'V',       'username' => 'v',       'email' => 'vyngovutuong@gmail.com',          'dept' => $deptMC],
+            // Research and Evaluation
+            ['name' => 'Yunice',  'username' => 'yunice',  'email' => 'yunicemalate69@icloud.com',       'dept' => $deptRE],
+            ['name' => 'Ajif',    'username' => 'ajif',    'email' => 'ajifyusuf28@gmail.com',           'dept' => $deptRE],
+            ['name' => 'Raja',    'username' => 'raja',    'email' => 'ruzmaneman@gmail.com',            'dept' => $deptRE],
+            ['name' => 'Mayang',  'username' => 'mayang',  'email' => 'wahyumayangsari@gmail.com',       'dept' => $deptRE],
+            ['name' => 'Kotomi',  'username' => 'kotomi',  'email' => 'kotomi.0427.amnos@icloud.com',    'dept' => $deptRE],
+            // Logistic
+            ['name' => 'Jorge',   'username' => 'jorge',   'email' => 'jorgedelfin2005@gmail.com',       'dept' => $deptLog],
+            ['name' => 'Samuel',  'username' => 'samuel',  'email' => 'samuel.owusu26@gmail.com',        'dept' => $deptLog],
+            ['name' => 'Maryam',  'username' => 'maryam',  'email' => 'mariam5abdalsattar@gmail.com',    'dept' => $deptLog],
+            ['name' => 'Ikram',   'username' => 'ikram',   'email' => 'ikramidris@rocketmail.com',       'dept' => $deptLog],
         ];
 
-        $members = collect($memberData)->map(fn($m) => User::create(array_merge($m, [
+        $members = collect($memberData)->map(fn($m) => User::create([
+            'name'     => $m['name'],
+            'username' => $m['username'],
+            'email'    => $m['email'],
             'password' => Hash::make('password'),
             'role'     => 'member',
-        ])));
+            'status'   => 'available',
+        ]));
 
-        // ── Departments ──────────────────────────────────────────
-        $deptAccara = Department::create(['name' => 'Acara', 'description' => 'Divisi Acara dan Hiburan']);
-        $deptHumas  = Department::create(['name' => 'Humas', 'description' => 'Divisi Hubungan Masyarakat']);
-        $deptLogistik = Department::create(['name' => 'Logistik', 'description' => 'Divisi Perlengkapan dan Logistik']);
-
-        $deptAccara->users()->sync([$members[0]->id, $members[1]->id, $members[2]->id, $vp->id]);
-        $deptHumas->users()->sync([$members[3]->id, $members[4]->id]);
-        $deptLogistik->users()->sync([$members[5]->id, $members[6]->id, $members[7]->id]);
+        // ── Department assignments ───────────────────────────────
+        $deptEM->users()->sync(
+            $members->filter(fn($u, $i) => $memberData[$i]['dept'] === $deptEM)->pluck('id')
+                ->merge([$president->id, $vp->id])->toArray()
+        );
+        foreach ([$deptER, $deptMC, $deptRE, $deptLog] as $dept) {
+            $dept->users()->sync(
+                $members->filter(fn($u, $i) => $memberData[$i]['dept'] === $dept)->pluck('id')->toArray()
+            );
+        }
 
         // ── Previous completed event ─────────────────────────────
         $prevEvent = Event::create([
