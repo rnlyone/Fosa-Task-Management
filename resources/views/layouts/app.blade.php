@@ -343,6 +343,13 @@
                                     </li>
                                     <li><div class="dropdown-divider my-1 mx-n2"></div></li>
                                     <li>
+                                        <a href="{{ route('profile.show') }}" class="dropdown-item d-flex align-items-center gap-2">
+                                            <i class="ti ti-user-circle ti-sm"></i>
+                                            <span>My Profile</span>
+                                        </a>
+                                    </li>
+                                    <li><div class="dropdown-divider my-1 mx-n2"></div></li>
+                                    <li>
                                         <div class="d-grid px-2 pt-2 pb-1">
                                             <form method="POST" action="{{ route('logout') }}">
                                                 @csrf

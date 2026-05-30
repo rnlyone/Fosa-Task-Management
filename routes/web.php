@@ -58,6 +58,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/evaluations/{evaluation}/submit', [EvaluationController::class, 'submitForm'])->name('evaluations.submit');
     Route::get('/evaluations/{evaluation}/thankyou', [EvaluationController::class, 'thankyou'])->name('evaluations.thankyou');
 
+    // Profile
+    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
+    Route::put('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::post('/profile/avatar', [\App\Http\Controllers\ProfileController::class, 'updateAvatar'])->name('profile.avatar');
+
     // Update own status
     Route::patch('/profile/status', [\App\Http\Controllers\ProfileController::class, 'updateStatus'])->name('profile.status');
 
