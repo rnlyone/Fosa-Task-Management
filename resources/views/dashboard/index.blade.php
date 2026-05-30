@@ -177,7 +177,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" id="addTaskSubmitBtn" class="btn btn-primary">
                         <i class="ti ti-plus me-1"></i> Add Task
                     </button>
                 </div>
@@ -288,21 +288,40 @@
         });
     });
 
+    // Reset Add Task button when modal closes
+    document.getElementById('addTaskModal').addEventListener('hidden.bs.modal', function () {
+        const btn = document.getElementById('addTaskSubmitBtn');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ti ti-plus me-1"></i> Add Task';
+    });
+
     // --- Add Task Form ---
     document.getElementById('addTaskForm').addEventListener('submit', async function (e) {
         e.preventDefault();
         document.getElementById('taskDescriptionInput').value = addQuill.root.innerHTML;
 
+        const btn = document.getElementById('addTaskSubmitBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Adding...';
+
         const fd = new FormData(this);
-        const res = await fetch('{{ route("tasks.store") }}', {
-            method: 'POST',
-            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
-            body: fd,
-        });
-        const json = await res.json();
-        if (json.success) {
-            bootstrap.Modal.getInstance(document.getElementById('addTaskModal')).hide();
-            location.reload();
+        try {
+            const res = await fetch('{{ route("tasks.store") }}', {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+                body: fd,
+            });
+            const json = await res.json();
+            if (json.success) {
+                bootstrap.Modal.getInstance(document.getElementById('addTaskModal')).hide();
+                location.reload();
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="ti ti-plus me-1"></i> Add Task';
+            }
+        } catch (err) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="ti ti-plus me-1"></i> Add Task';
         }
     });
 
