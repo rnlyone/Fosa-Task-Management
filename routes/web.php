@@ -18,6 +18,9 @@ Route::middleware('guest')->group(function () {
 });
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
+// Email-change verification (token-authenticated, no session auth required)
+Route::get('/profile/verify-email/{token}', [\App\Http\Controllers\ProfileController::class, 'verifyEmailChange'])->name('profile.verify-email');
+
 // Authenticated routes
 Route::middleware('auth')->group(function () {
 
@@ -66,6 +69,7 @@ Route::middleware('auth')->group(function () {
 
     // Update own status
     Route::patch('/profile/status', [\App\Http\Controllers\ProfileController::class, 'updateStatus'])->name('profile.status');
+    Route::delete('/profile/cancel-email-change', [\App\Http\Controllers\ProfileController::class, 'cancelEmailChange'])->name('profile.cancel-email-change');
 
     // Notifications
     Route::post('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markRead'])->name('notifications.read');

@@ -22,9 +22,11 @@ class User extends Authenticatable
         'status',
         'role',
         'avatar',
+        'pending_email',
+        'email_change_token',
     ];
 
-    protected $hidden = ['password', 'remember_token'];
+    protected $hidden = ['password', 'remember_token', 'email_change_token'];
 
     protected function casts(): array
     {

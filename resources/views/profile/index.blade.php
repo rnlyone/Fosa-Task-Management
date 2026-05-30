@@ -63,7 +63,6 @@
                 </div>
 
                 <h5 class="mb-0 fw-semibold">{{ $user->name }}</h5>
-                <p class="text-muted mb-1" style="font-size:.85rem;">@{{ $user->username }}</p>
                 <span class="badge bg-label-primary">{{ ucfirst(str_replace('_', ' ', $user->role)) }}</span>
 
                 <hr class="my-3">
@@ -143,6 +142,21 @@
                                    class="form-control @error('email') is-invalid @enderror"
                                    value="{{ old('email', $user->email) }}" required>
                             @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            @if($user->pending_email)
+                            <div class="alert alert-warning d-flex align-items-start gap-2 mt-2 mb-0 py-2">
+                                <i class="ti ti-mail-forward fs-5 flex-shrink-0 mt-1"></i>
+                                <div class="flex-grow-1" style="font-size:.85rem;">
+                                    Pending verification: <strong>{{ $user->pending_email }}</strong><br>
+                                    <span class="text-muted">Your email will change once you click the link sent to that address.</span>
+                                </div>
+                                <form method="POST" action="{{ route('profile.cancel-email-change') }}" class="flex-shrink-0">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-label-danger py-1 px-2" title="Cancel pending change">
+                                        <i class="ti ti-x ti-xs me-1"></i>Cancel
+                                    </button>
+                                </form>
+                            </div>
+                            @endif
                         </div>
                         <div class="col-12 d-flex justify-content-end">
                             <button type="submit" class="btn btn-primary">
