@@ -104,9 +104,9 @@ class User extends Authenticatable
     public function getAvatarUrlAttribute(): string
     {
         if ($this->avatar) {
-            return asset('storage/' . $this->avatar);
+            // Files are stored directly in public/avatars/ — no symlink needed
+            return asset($this->avatar);
         }
-        $initials = strtoupper(substr($this->name, 0, 2));
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=7367f0&color=fff';
     }
 }

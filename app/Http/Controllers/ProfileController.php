@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 
 class ProfileController extends Controller
@@ -50,13 +49,20 @@ class ProfileController extends Controller
 
         $user = Auth::user();
 
-        // Remove old stored avatar
-        if ($user->avatar) {
-            Storage::disk('public')->delete($user->avatar);
+        // Remove old avatar file from public/avatars/
+        if ($user->avatar && file_exists(public_path($user->avatar))) {
+            unlink(public_path($user->avatar));
         }
 
-        $path = $request->file('avatar')->store('avatars', 'public');
-        $user->update(['avatar' => $path]);
+        // Store directly in public/avatars/ — no storage:link needed
+        $dir      = public_path('avatars');
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+        $filename = uniqid('avatar_') . '.' . $request->file('avatar')->getClientOriginalExtension();
+        $request->file('avatar')->move($dir, $filename);
+
+        $user->update(['avatar' => 'avatars/' . $filename]);
 
         return back()->with('success', 'Avatar updated successfully.');
     }
