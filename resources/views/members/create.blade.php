@@ -53,6 +53,7 @@
                                 <option value="member" {{ old('role') === 'member' ? 'selected' : '' }}>Member</option>
                                 <option value="vice_president" {{ old('role') === 'vice_president' ? 'selected' : '' }}>Vice President</option>
                                 <option value="president" {{ old('role') === 'president' ? 'selected' : '' }}>President</option>
+                                <option value="administrator" {{ old('role') === 'administrator' ? 'selected' : '' }}>Administrator</option>
                             </select>
                             @error('role')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>

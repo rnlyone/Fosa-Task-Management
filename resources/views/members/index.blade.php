@@ -33,6 +33,7 @@
                     <option value="">All Roles</option>
                     <option value="president" {{ request('role') === 'president' ? 'selected' : '' }}>President</option>
                     <option value="vice_president" {{ request('role') === 'vice_president' ? 'selected' : '' }}>Vice President</option>
+                    <option value="administrator" {{ request('role') === 'administrator' ? 'selected' : '' }}>Administrator</option>
                     <option value="member" {{ request('role') === 'member' ? 'selected' : '' }}>Member</option>
                 </select>
             </div>
@@ -68,7 +69,7 @@
             <tbody>
                 @forelse($members as $member)
                 @php
-                $roleColors = ['president' => 'primary', 'vice_president' => 'info', 'member' => 'secondary'];
+                $roleColors = ['president' => 'primary', 'vice_president' => 'info', 'administrator' => 'danger', 'member' => 'secondary'];
                 $statusColors = ['free' => 'success', 'available' => 'info', 'busy' => 'warning', 'very_busy' => 'danger', 'not_available' => 'secondary', 'cant_be_bothered' => 'dark'];
                 @endphp
                 <tr>

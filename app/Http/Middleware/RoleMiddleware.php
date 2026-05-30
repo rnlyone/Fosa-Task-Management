@@ -12,7 +12,8 @@ class RoleMiddleware
     {
         $user = $request->user();
 
-        if (!$user || !in_array($user->role, $roles)) {
+        // Administrator bypasses all role restrictions
+        if (!$user || ($user->role !== 'administrator' && !in_array($user->role, $roles))) {
             abort(403, 'Access denied.');
         }
 

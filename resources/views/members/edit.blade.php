@@ -51,7 +51,7 @@
                         <div class="col-md-6">
                             <label class="form-label">Role</label>
                             <select name="role" class="form-select">
-                                @foreach(['member', 'vice_president', 'president'] as $r)
+                                @foreach(['member', 'vice_president', 'president', 'administrator'] as $r)
                                 <option value="{{ $r }}" {{ old('role', $member->role) === $r ? 'selected' : '' }}>{{ ucfirst(str_replace('_', ' ', $r)) }}</option>
                                 @endforeach
                             </select>

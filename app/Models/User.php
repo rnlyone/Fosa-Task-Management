@@ -47,9 +47,15 @@ class User extends Authenticatable
         return $this->role === 'vice_president';
     }
 
+    public function isAdmin(): bool
+    {
+        return $this->role === 'administrator';
+    }
+
+    /** True for president, vice_president, and administrator. */
     public function isLeadership(): bool
     {
-        return in_array($this->role, ['president', 'vice_president']);
+        return in_array($this->role, ['president', 'vice_president', 'administrator']);
     }
 
     // --- Relationships ---

@@ -76,6 +76,7 @@
     <div class="kanban-wrapper d-flex gap-4" style="overflow-x: auto; min-height: 70vh; padding-bottom: 1rem;">
 
         @php
+        $canSeeBadges = auth()->user()->isLeadership() || auth()->user()->id === $event->manager_id;
         $columnLabels = [
             'backlog' => ['label' => 'Backlog', 'color' => 'secondary', 'icon' => 'ti-stack-2'],
             'todo'    => ['label' => 'To Do',   'color' => 'info',      'icon' => 'ti-circle'],
@@ -156,7 +157,7 @@
                             @foreach($eventMembers as $member)
                             <option value="{{ $member->id }}"
                                 data-status="{{ $membersData[$member->id]['status'] ?? '' }}"
-                                data-badge="{{ $membersData[$member->id]['badge'] ?? '' }}">{{ $member->name }} ({{ ucfirst(str_replace('_', ' ', $member->role)) }})</option>
+                                data-badge="{{ $canSeeBadges ? ($membersData[$member->id]['badge'] ?? '') : '' }}">{{ $member->name }} ({{ ucfirst(str_replace('_', ' ', $member->role)) }})</option>
                             @endforeach
                         </select>
                     </div>
@@ -236,7 +237,7 @@
                     @foreach($eventMembers as $member)
                     <option value="{{ $member->id }}"
                         data-status="{{ $membersData[$member->id]['status'] ?? '' }}"
-                        data-badge="{{ $membersData[$member->id]['badge'] ?? '' }}">{{ $member->name }}</option>
+                        data-badge="{{ $canSeeBadges ? ($membersData[$member->id]['badge'] ?? '') : '' }}">{{ $member->name }}</option>
                     @endforeach
                 </select>
             </div>
