@@ -1,6 +1,10 @@
 @extends('layouts.app')
 @section('title', 'My Profile')
 
+@push('styles')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
+@endpush
+
 @section('content')
 <div class="row mb-4 align-items-center">
     <div class="col">
@@ -9,6 +13,33 @@
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
             <li class="breadcrumb-item active">Profile</li>
         </ol></nav>
+    </div>
+</div>
+
+{{-- Crop Modal --}}
+<div class="modal fade" id="cropModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="ti ti-crop me-2"></i>Crop Photo</h5>
+                <button type="button" class="btn-close" id="cropCancel"></button>
+            </div>
+            <div class="modal-body" style="background:#1e1e2d;">
+                <div style="max-height:420px;overflow:hidden;">
+                    <img id="cropImage" style="max-width:100%;display:block;">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="d-flex gap-2 me-auto text-muted" style="font-size:.8rem;">
+                    <span><i class="ti ti-arrows-move ti-xs"></i> Drag to pan</span>
+                    <span><i class="ti ti-zoom-in ti-xs"></i> Scroll to zoom</span>
+                </div>
+                <button type="button" class="btn btn-label-secondary" id="cropCancel2">Cancel</button>
+                <button type="button" class="btn btn-primary" id="cropApply">
+                    <i class="ti ti-check me-1"></i> Apply & Save
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -26,7 +57,7 @@
                          style="width:120px;height:120px;object-fit:cover;">
                     <label for="avatarInput"
                            class="position-absolute bottom-0 end-0 btn btn-sm btn-primary rounded-circle p-1"
-                           style="width:30px;height:30px;cursor:pointer;" title="Change avatar">
+                           style="width:30px;height:30px;cursor:pointer;" title="Change photo">
                         <i class="ti ti-camera ti-xs"></i>
                     </label>
                 </div>
@@ -37,14 +68,21 @@
 
                 <hr class="my-3">
 
-                <form method="POST" action="{{ route('profile.avatar') }}" enctype="multipart/form-data" id="avatarForm">
+                <input type="file" id="avatarInput" accept="image/*" class="d-none">
+                <p class="text-muted mb-0" style="font-size:.75rem;">JPG, PNG or WebP &middot; max 2 MB</p>
+                <p class="text-muted mt-1 mb-0" style="font-size:.75rem;">
+                    <i class="ti ti-crop ti-xs me-1"></i>You can crop the photo before saving
+                </p>
+
+                {{-- Hidden form for AJAX --}}
+                <form id="avatarForm" action="{{ route('profile.avatar') }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    <input type="file" id="avatarInput" name="avatar" accept="image/*" class="d-none">
-                    <p class="text-muted mb-2" style="font-size:.75rem;">JPG, PNG or WebP &middot; max 2 MB</p>
-                    <button type="submit" id="avatarSaveBtn" class="btn btn-primary btn-sm d-none">
-                        <i class="ti ti-upload me-1"></i> Save Photo
-                    </button>
                 </form>
+
+                <div id="avatarSpinner" class="mt-2 d-none">
+                    <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                    <span class="text-muted ms-1" style="font-size:.8rem;">Uploading…</span>
+                </div>
             </div>
         </div>
 
@@ -175,33 +213,102 @@
 </div>
 
 @push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 <script>
-// Avatar file preview + auto-show save button
-document.getElementById('avatarInput').addEventListener('change', function () {
-    const file = this.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function (e) {
-        document.getElementById('avatarPreview').src = e.target.result;
-        document.getElementById('avatarSaveBtn').classList.remove('d-none');
-    };
-    reader.readAsDataURL(file);
-});
+(function () {
+    let cropper = null;
+    const cropModalEl = document.getElementById('cropModal');
+    const cropModal   = new bootstrap.Modal(cropModalEl);
+    const cropImage   = document.getElementById('cropImage');
+    const avatarInput = document.getElementById('avatarInput');
 
-// Toggle password visibility
-document.querySelectorAll('.toggle-pw').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-        const input = this.closest('.input-group').querySelector('input');
-        const icon  = this.querySelector('i');
-        if (input.type === 'password') {
-            input.type = 'text';
-            icon.classList.replace('ti-eye-off', 'ti-eye');
-        } else {
-            input.type = 'password';
-            icon.classList.replace('ti-eye', 'ti-eye-off');
-        }
+    // Open file picker when camera label is clicked
+    avatarInput.addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            cropImage.src = e.target.result;
+            cropModal.show();
+        };
+        reader.readAsDataURL(file);
+        // reset so same file can be re-selected after cancel
+        this.value = '';
     });
-});
+
+    // Init Cropper.js once modal is fully shown
+    cropModalEl.addEventListener('shown.bs.modal', function () {
+        if (cropper) { cropper.destroy(); }
+        cropper = new Cropper(cropImage, {
+            aspectRatio: 1,
+            viewMode: 2,
+            dragMode: 'move',
+            autoCropArea: 0.9,
+            restore: false,
+            guides: true,
+            center: true,
+            highlight: false,
+            cropBoxMovable: true,
+            cropBoxResizable: true,
+            toggleDragModeOnDblclick: false,
+        });
+    });
+
+    // Destroy Cropper when modal closes
+    cropModalEl.addEventListener('hidden.bs.modal', function () {
+        if (cropper) { cropper.destroy(); cropper = null; }
+    });
+
+    // Cancel buttons
+    document.getElementById('cropCancel').addEventListener('click',  () => cropModal.hide());
+    document.getElementById('cropCancel2').addEventListener('click', () => cropModal.hide());
+
+    // Apply & Save: get cropped canvas → blob → upload
+    document.getElementById('cropApply').addEventListener('click', function () {
+        if (!cropper) return;
+
+        const applyBtn = this;
+        applyBtn.disabled = true;
+        applyBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Saving…';
+
+        cropper.getCroppedCanvas({ width: 400, height: 400 }).toBlob(function (blob) {
+            const fd = new FormData(document.getElementById('avatarForm'));
+            fd.append('avatar', blob, 'avatar.jpg');
+
+            fetch('{{ route('profile.avatar') }}', { method: 'POST', body: fd })
+                .then(r => r.redirected ? r.url : Promise.reject('Upload failed'))
+                .then(url => {
+                    // Update all avatar images on the page with the cropped preview
+                    const previewUrl = URL.createObjectURL(blob);
+                    document.querySelectorAll('#avatarPreview, .navbar-user-avatar').forEach(img => img.src = previewUrl);
+                    cropModal.hide();
+                    // Soft-reload to sync navbar avatar + session flash
+                    window.location.reload();
+                })
+                .catch(err => {
+                    applyBtn.disabled = false;
+                    applyBtn.innerHTML = '<i class="ti ti-check me-1"></i> Apply & Save';
+                    alert('Upload failed. Please try again.');
+                });
+        }, 'image/jpeg', 0.9);
+    });
+
+    // Toggle password visibility
+    document.querySelectorAll('.toggle-pw').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const input = this.closest('.input-group').querySelector('input');
+            const icon  = this.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('ti-eye-off', 'ti-eye');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('ti-eye', 'ti-eye-off');
+            }
+        });
+    });
+})();
 </script>
 @endpush
 @endsection
