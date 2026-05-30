@@ -35,7 +35,16 @@ class DashboardController extends Controller
         $allEvents   = Event::orderByDesc('id')->get(['id', 'name', 'status']);
         $eventMembers = $event->members()->with('departments')->get();
 
-        return view('dashboard.index', compact('event', 'columns', 'allEvents', 'eventMembers'));
+        $membersData = $eventMembers->mapWithKeys(function ($member) use ($event) {
+            $taskCount = $member->tasks()->where('tasks.event_id', $event->id)->count();
+            $workload  = $member->workloadScore($event->id);
+            $badge = '';
+            if ($workload >= 8)       $badge = 'OLM';
+            elseif ($taskCount <= 1)  $badge = 'UPM';
+            return [$member->id => ['status' => $member->status, 'badge' => $badge]];
+        });
+
+        return view('dashboard.index', compact('event', 'columns', 'allEvents', 'eventMembers', 'membersData'));
     }
 
     public function switchEvent(int $eventId)
@@ -54,6 +63,15 @@ class DashboardController extends Controller
         $allEvents    = Event::orderByDesc('id')->get(['id', 'name', 'status']);
         $eventMembers = $event->members()->with('departments')->get();
 
-        return view('dashboard.index', compact('event', 'columns', 'allEvents', 'eventMembers'));
+        $membersData = $eventMembers->mapWithKeys(function ($member) use ($event) {
+            $taskCount = $member->tasks()->where('tasks.event_id', $event->id)->count();
+            $workload  = $member->workloadScore($event->id);
+            $badge = '';
+            if ($workload >= 8)       $badge = 'OLM';
+            elseif ($taskCount <= 1)  $badge = 'UPM';
+            return [$member->id => ['status' => $member->status, 'badge' => $badge]];
+        });
+
+        return view('dashboard.index', compact('event', 'columns', 'allEvents', 'eventMembers', 'membersData'));
     }
 }

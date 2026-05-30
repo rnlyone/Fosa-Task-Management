@@ -20,7 +20,7 @@ class EventManagementController extends Controller
 
         $stats        = $event->taskStats();
         $overloaded   = $event->overloadedMembers(8);
-        $underperform = $event->underperformingMembers(2);
+        $underperform = $event->underperformingMembers();
 
         // Per-member workload data for charts
         $memberWorkload = $event->members->map(function (User $member) use ($event) {

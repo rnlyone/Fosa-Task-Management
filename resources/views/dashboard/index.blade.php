@@ -154,7 +154,9 @@
                         <label class="form-label">Assign Members</label>
                         <select name="assignees[]" class="select2 form-select" multiple>
                             @foreach($eventMembers as $member)
-                            <option value="{{ $member->id }}">{{ $member->name }} ({{ ucfirst(str_replace('_', ' ', $member->role)) }})</option>
+                            <option value="{{ $member->id }}"
+                                data-status="{{ $membersData[$member->id]['status'] ?? '' }}"
+                                data-badge="{{ $membersData[$member->id]['badge'] ?? '' }}">{{ $member->name }} ({{ ucfirst(str_replace('_', ' ', $member->role)) }})</option>
                             @endforeach
                         </select>
                     </div>
@@ -232,7 +234,9 @@
                 <label class="form-label">Assign Members</label>
                 <select id="editTaskAssignees" class="select2 form-select" multiple>
                     @foreach($eventMembers as $member)
-                    <option value="{{ $member->id }}">{{ $member->name }}</option>
+                    <option value="{{ $member->id }}"
+                        data-status="{{ $membersData[$member->id]['status'] ?? '' }}"
+                        data-badge="{{ $membersData[$member->id]['badge'] ?? '' }}">{{ $member->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -271,10 +275,27 @@
     const addQuill  = new Quill('#taskDescriptionEditor',  { theme: 'snow', placeholder: 'Task description...' });
     const editQuill = new Quill('#editDescriptionEditor', { theme: 'snow', placeholder: 'Task description...' });
 
-    // Init Select2
+    // Init Select2 with member status/badge pills
+    const statusColors = { free:'success', available:'info', busy:'warning', very_busy:'danger', not_available:'secondary', cant_be_bothered:'dark' };
+    const badgeColors  = { OLM:'danger', UPM:'warning' };
+
+    function formatMember(option) {
+        if (!option.id || !option.element) return option.text;
+        const status = option.element.dataset.status;
+        const badge  = option.element.dataset.badge;
+        const $wrap  = $('<span class="d-flex align-items-center gap-1 flex-wrap"></span>').text(option.text);
+        if (status) {
+            $wrap.append(`<span class="badge bg-label-${statusColors[status]||'secondary'}" style="font-size:10px;text-transform:capitalize">${status.replace(/_/g,' ')}</span>`);
+        }
+        if (badge) {
+            $wrap.append(`<span class="badge bg-label-${badgeColors[badge]||'secondary'}" style="font-size:10px">${badge}</span>`);
+        }
+        return $wrap;
+    }
+
     $('.select2').each(function () {
         $(this).wrap('<div class="position-relative"></div>');
-        $(this).select2({ dropdownParent: $(this).parent() });
+        $(this).select2({ dropdownParent: $(this).parent(), templateResult: formatMember });
     });
 
     // Init Flatpickr
@@ -355,11 +376,13 @@
         }
     });
 
-    // --- Sortable columns ---
+    // --- Sortable columns (delay on touch prevents drag eating tap events on mobile) ---
     document.querySelectorAll('.kanban-tasks').forEach(container => {
         Sortable.create(container, {
             group: 'kanban',
             animation: 150,
+            delay: 200,
+            delayOnTouchOnly: true,
             onEnd: async function (evt) {
                 const tasks = [];
                 document.querySelectorAll('.kanban-tasks').forEach(col => {

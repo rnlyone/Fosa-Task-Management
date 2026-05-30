@@ -116,26 +116,15 @@ class Event extends Model
     }
 
     /**
-     * Members with low contribution: few done tasks across this + previous event.
+     * Members with low contribution: assigned to 0 or 1 tasks in this event.
      */
-    public function underperformingMembers(int $threshold = 2): \Illuminate\Support\Collection
+    public function underperformingMembers(int $threshold = 1): \Illuminate\Support\Collection
     {
-        $previousEvent = static::where('id', '<', $this->id)
-            ->where('status', 'completed')
-            ->orderByDesc('id')
-            ->first();
-
-        $eventIds = [$this->id];
-        if ($previousEvent) {
-            $eventIds[] = $previousEvent->id;
-        }
-
-        return $this->members->filter(function (User $member) use ($eventIds, $threshold) {
-            $done = $member->tasks()
-                ->whereIn('tasks.event_id', $eventIds)
-                ->where('column', 'done')
+        return $this->members->filter(function (User $member) use ($threshold) {
+            $count = $member->tasks()
+                ->where('tasks.event_id', $this->id)
                 ->count();
-            return $done <= $threshold;
+            return $count <= $threshold;
         });
     }
 }
