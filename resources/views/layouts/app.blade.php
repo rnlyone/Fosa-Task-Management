@@ -152,7 +152,14 @@
                     </li>
                     @endif
                     @php
-                        $openEval = \App\Models\Evaluation::where('status', 'open')->latest()->first();
+                        $now = now();
+                        $openEval = \App\Models\Evaluation::where(function($q) use ($now) {
+                            $q->where(function($q2) use ($now) {
+                                $q2->whereNull('opens_at')->orWhere('opens_at', '<=', $now);
+                            })->where(function($q2) use ($now) {
+                                $q2->whereNull('closes_at')->orWhere('closes_at', '>=', $now);
+                            });
+                        })->latest()->first();
                     @endphp
                     @if($openEval)
                     <li class="menu-item">
