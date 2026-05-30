@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\Task;
 use App\Models\User;
 use App\Notifications\TaskAssigned;
+use App\Notifications\TaskDeadlineSet;
 use App\Notifications\TaskDone;
 use App\Notifications\TaskMoved;
 use App\Notifications\TaskUnassigned;
@@ -71,9 +72,19 @@ class TaskController extends Controller
             'position'      => ['nullable', 'integer'],
         ]);
 
-        $oldColumn = $task->column;
+        $oldColumn   = $task->column;
+        $oldDeadline = $task->deadline_date;
 
         $task->update(array_filter($data, fn($v, $k) => $k !== 'assignees', ARRAY_FILTER_USE_BOTH));
+
+        // Notify assignees when a deadline is first set (was null, now has a value)
+        if (array_key_exists('deadline_date', $data) && !$oldDeadline && !empty($data['deadline_date'])) {
+            $task->loadMissing('assignees', 'event');
+            $notifyIds = $task->assignees->pluck('id')->diff([Auth::id()]);
+            foreach (User::whereIn('id', $notifyIds)->get() as $user) {
+                $user->notify(new TaskDeadlineSet($task));
+            }
+        }
 
         if (array_key_exists('assignees', $data)) {
             $newIds = collect($data['assignees'] ?? []);
@@ -187,12 +198,17 @@ class TaskController extends Controller
         $actorId = Auth::id();
         $task->loadMissing('assignees', 'event');
 
-        // Notify assignees about the column move (skip the person who moved it)
-        foreach ($task->assignees->where('id', '!=', $actorId) as $assignee) {
-            $assignee->notify(new TaskMoved($task, $fromColumn, $toColumn));
+        // Skip notifications for: anything → archive, or archive → done
+        $skipMoved = ($toColumn === 'archive') || ($fromColumn === 'archive' && $toColumn === 'done');
+
+        if (!$skipMoved) {
+            // Notify assignees about the column move (skip the person who moved it)
+            foreach ($task->assignees->where('id', '!=', $actorId) as $assignee) {
+                $assignee->notify(new TaskMoved($task, $fromColumn, $toColumn));
+            }
         }
 
-        if ($toColumn === 'done') {
+        if ($toColumn === 'done' && $fromColumn !== 'archive') {
             $this->notifyTaskDone($task, $actorId);
         }
 
