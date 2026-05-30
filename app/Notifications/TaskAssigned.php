@@ -35,13 +35,15 @@ class TaskAssigned extends Notification
 
     public function toSmartMail(object $notifiable): array
     {
-        $url = route('dashboard.switch', $this->task->event_id);
+        $url     = route('dashboard.switch', $this->task->event_id) . '?open_task=' . $this->task->id;
+        $boardUrl = route('dashboard.switch', $this->task->event_id);
         return [
             'subject' => '[' . $this->task->event->name . '] Task Assigned: ' . $this->task->title,
             'html'    => view('emails.notifications.task-assigned', [
                 'task'     => $this->task,
                 'user'     => $notifiable,
                 'url'      => $url,
+                'boardUrl' => $boardUrl,
             ])->render(),
         ];
     }

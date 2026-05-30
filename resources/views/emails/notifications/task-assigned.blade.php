@@ -15,6 +15,7 @@
     <div>{!! $task->description !!}</div>
     @endif
   </div>
-  <a href="{{ $url }}" class="btn">View Board</a>
+  <a href="{{ $url }}" class="btn">Open Task</a>
+  <a href="{{ $boardUrl }}" class="btn-outline">View Board</a>
 </div>
 @endsection

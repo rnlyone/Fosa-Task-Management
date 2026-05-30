@@ -14,6 +14,7 @@
   .meta { background:#eff6ff; border-left:4px solid #2563eb; padding:14px 18px; border-radius:6px; margin:20px 0; font-size:14px; }
   .meta p { margin:4px 0; }
   .btn { display:inline-block; margin-top:24px; background:#2563eb; color:#fff !important; text-decoration:none; padding:12px 28px; border-radius:6px; font-weight:600; font-size:15px; }
+  .btn-outline { display:inline-block; margin-top:24px; margin-left:12px; background:#fff; color:#2563eb !important; text-decoration:none; padding:11px 24px; border-radius:6px; font-weight:600; font-size:15px; border:2px solid #2563eb; }
   .footer { padding:20px 32px; background:#f8fafc; font-size:12px; color:#9ca3af; text-align:center; }
 </style>
 </head>

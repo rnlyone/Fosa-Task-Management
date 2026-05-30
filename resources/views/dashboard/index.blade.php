@@ -280,6 +280,36 @@
     // Init Flatpickr
     $('.flatpickr-date').flatpickr({ dateFormat: 'Y-m-d' });
 
+    // --- Auto-open task from email link (?open_task=ID) ---
+    (async function () {
+        const params = new URLSearchParams(window.location.search);
+        const openId = params.get('open_task');
+        if (!openId) return;
+        try {
+            const res  = await fetch(`/tasks/${openId}`, { headers: { 'Accept': 'application/json' } });
+            if (!res.ok) return;
+            const task = await res.json();
+            document.getElementById('editTaskId').value            = task.id;
+            document.getElementById('editTaskName').value          = task.title;
+            if (task.creator) {
+                document.getElementById('editTaskCreatorName').textContent = task.creator.name;
+                document.getElementById('editTaskCreator').style.display = '';
+            } else {
+                document.getElementById('editTaskCreator').style.display = 'none';
+            }
+            document.getElementById('editTaskPriority').value      = task.priority;
+            document.getElementById('editTaskColumn').value        = task.column;
+            document.getElementById('editTaskDeadline').value      = task.deadline_date ?? '';
+            editQuill.root.innerHTML                               = task.description ?? '';
+            document.getElementById('editDescriptionInput').value  = task.description ?? '';
+            const assigneeIds = task.assignees.map(a => a.id.toString());
+            $('#editTaskAssignees').val(assigneeIds).trigger('change');
+            new bootstrap.Offcanvas(document.getElementById('editTaskOffcanvas')).show();
+            // Clean the URL without reloading
+            window.history.replaceState({}, '', window.location.pathname);
+        } catch (e) {}
+    })();
+
     // --- Add Task Column shortcut ---
     document.querySelectorAll('.add-task-btn').forEach(btn => {
         btn.addEventListener('click', () => {
